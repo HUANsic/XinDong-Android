@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/padding_layout_2"
+    android:paddingEnd="@dimen/padding_layout_2"
+    android:paddingTop="@dimen/padding_layout_1"
+    android:paddingBottom="@dimen/padding_layout_1"
+    android:background="@color/colorGrey">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="遥控车控制"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:gravity="center"
+        android:layout_marginBottom="10dp" />
+
+    <!-- 摇杆控制区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- 摇杆控制 -->
+        <cn.wch.blecommon.ui.JoystickView
+            android:id="@+id/joystick_control"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_margin="10dp" />
+
+        <!-- 摇杆状态显示 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X:"
+                android:textColor="@color/colorBlack"
+                android:layout_marginEnd="5dp" />
+
+            <TextView
+                android:id="@+id/tv_x_offset"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/colorBlack"
+                android:gravity="center"
+                android:background="@drawable/tv_round"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y:"
+                android:textColor="@color/colorBlack"
+                android:layout_marginEnd="5dp" />
+
+            <TextView
+                android:id="@+id/tv_y_offset"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/colorBlack"
+                android:gravity="center"
+                android:background="@drawable/tv_round" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 功能按钮区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+        android:gravity="center">
+
+        <!-- 灯光控制 -->
+        <Button
+            android:id="@+id/btn_light"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="灯光"
+            android:textSize="14sp"
+            android:background="@drawable/btn_round"
+            android:textColor="@color/colorWhite"
+            android:layout_marginEnd="10dp" />
+
+        <!-- 喇叭控制 -->
+        <Button
+            android:id="@+id/btn_horn"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="喇叭"
+            android:textSize="14sp"
+            android:background="@drawable/btn_round"
+            android:textColor="@color/colorWhite"
+            android:layout_marginStart="10dp" />
+
+    </LinearLayout>
+
+    <!-- 速度控制 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="速度:"
+            android:textColor="@color/colorBlack"
+            android:layout_marginEnd="10dp" />
+
+        <Button
+            android:id="@+id/btn_speed_low"
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:text="慢"
+            android:textSize="12sp"
+            android:background="@drawable/btn_round"
+            android:textColor="@color/colorWhite"
+            android:layout_marginEnd="5dp" />
+
+        <Button
+            android:id="@+id/btn_speed_medium"
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:text="中"
+            android:textSize="12sp"
+            android:background="@drawable/btn_round"
+            android:textColor="@color/colorWhite"
+            android:layout_marginEnd="5dp" />
+
+        <Button
+            android:id="@+id/btn_speed_high"
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:text="快"
+            android:textSize="12sp"
+            android:background="@drawable/btn_round"
+            android:textColor="@color/colorWhite" />
+
+    </LinearLayout>
+
+</LinearLayout>

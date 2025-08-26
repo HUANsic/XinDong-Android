@@ -1,0 +1,3 @@
+include ':ui'
+include ':app'
+rootProject.name = "芯动计划2025手机遥控"
