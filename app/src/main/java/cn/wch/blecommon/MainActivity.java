@@ -557,7 +557,7 @@ public class MainActivity extends BLEBaseActivity {
             btnClearReceive.setEnabled(true);
         }
         if((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE)==0
-            || (currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)==0){
+            && (currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)==0){
             //无写属性
             btnSend.setEnabled(false);
             btnClearSend.setEnabled(false);
@@ -565,13 +565,11 @@ public class MainActivity extends BLEBaseActivity {
             btnSend.setEnabled(true);
             btnClearSend.setEnabled(true);
             //写方式
-            if((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)==0){
+            if((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)!=0){
                 currentCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-            }
-            if((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE)==0){
+            }else if((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE)!=0){
                 currentCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
             }
-
         }
 
 

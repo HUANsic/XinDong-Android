@@ -17,6 +17,8 @@ import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.touchmcu.ui.DialogUtil;
 
+import io.reactivex.functions.Consumer;
+
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -66,7 +68,9 @@ public abstract class BLEBaseActivity extends AppCompatActivity {
 
     String[] permissions_ble=new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_ADVERTISE
     };
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,14 +136,27 @@ public abstract class BLEBaseActivity extends AppCompatActivity {
 
 
     public void requestPermission(){
-        rxPermissions.requestEachCombined(permissions).subscribe(new Consumer<Permission>() {
+        // 根据Android版本选择要申请的权限
+        String[] permissionsToRequest;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12+ 需要新的蓝牙权限
+            permissionsToRequest = permissions_ble;
+        } else {
+            // Android 12以下使用原有权限
+            permissionsToRequest = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+        }
+        
+        rxPermissions.requestEachCombined(permissionsToRequest).subscribe(new Consumer<Permission>() {
             @Override
             public void accept(Permission permission) throws Exception {
                 if (permission.granted) {//全部同意后调用
                     openBlueAdapter();
-                } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
+                } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择"以后不再询问"，以后申请权限，会继续弹出提示
                     showToast("请允许权限,否则APP不能正常运行");
-                } else {//只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
+                } else {//只要有一个选择：禁止，但选择"以后不再询问"，以后申请权限，不会继续弹出提示
                     showToast("请到设置中打开权限");
                 }
             }
