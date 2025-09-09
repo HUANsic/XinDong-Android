@@ -89,6 +89,14 @@ public class MainActivity extends BLEBaseActivity {
 
     private TextView notifyLabel;
 
+    // 摇杆控制相关
+    private JoystickView joystickView;
+    private TextView tvJoystickValues;
+    private TextView tvSwitchStatus;
+    private SwitchButton switchBtn1, switchBtn2, switchBtn3, switchBtn4;
+    private float joystickX = 0, joystickY = 0;
+    private boolean isTestStarted = false;
+
     @Override
     protected void setView() {
         setContentView(R.layout.activity_main);
@@ -116,6 +124,9 @@ public class MainActivity extends BLEBaseActivity {
 
         btnTest=findViewById(R.id.btn_test);
         notifyLabel=findViewById(R.id.tv_notify_label);
+
+        // 初始化摇杆控制组件
+        initJoystickControls();
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -507,6 +518,8 @@ public class MainActivity extends BLEBaseActivity {
         enableButtons(true);
 
         clearData();
+        isTestStarted = true; // 启用摇杆控制
+        etSend.setText(""); // 清空发送框的预览内容
         //隐藏一些控件
         sbNotify.setOnCheckedChangeListener(null);
 
@@ -599,6 +612,7 @@ public class MainActivity extends BLEBaseActivity {
         spService.setEnabled(true);
         spCharacteristic.setEnabled(true);
         enableButtons(false);
+        isTestStarted = false; // 禁用摇杆控制
         stopCurrentChar();
     }
 
@@ -847,6 +861,166 @@ public class MainActivity extends BLEBaseActivity {
                     }
                 });
     }
+
+    /**
+     * 初始化摇杆控制组件
+     */
+    private void initJoystickControls() {
+        joystickView = findViewById(R.id.joystick_view);
+        tvJoystickValues = findViewById(R.id.tv_joystick_values);
+        tvSwitchStatus = findViewById(R.id.tv_switch_status);
+        switchBtn1 = findViewById(R.id.switch_btn_1);
+        switchBtn2 = findViewById(R.id.switch_btn_2);
+        switchBtn3 = findViewById(R.id.switch_btn_3);
+        switchBtn4 = findViewById(R.id.switch_btn_4);
+
+        // 设置摇杆监听器
+        joystickView.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
+            @Override
+            public void onJoystickMoved(float x, float y) {
+                joystickX = x;
+                joystickY = y;
+                updateJoystickDisplay();
+                updateSendDataPreview(); // 更新发送数据预览
+                if (isTestStarted && currentCharacteristic != null) {
+                    sendJoystickData();
+                }
+            }
+        });
+
+        // 设置开关按钮监听器
+        SwitchButton.OnCheckedChangeListener switchListener = new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                updateSwitchStatus();
+                updateSendDataPreview(); // 更新发送数据预览
+                if (isTestStarted && currentCharacteristic != null) {
+                    sendJoystickData();
+                }
+            }
+        };
+
+        switchBtn1.setOnCheckedChangeListener(switchListener);
+        switchBtn2.setOnCheckedChangeListener(switchListener);
+        switchBtn3.setOnCheckedChangeListener(switchListener);
+        switchBtn4.setOnCheckedChangeListener(switchListener);
+
+        // 初始状态
+        updateJoystickDisplay();
+        updateSwitchStatus();
+        updateSendDataPreview();
+    }
+
+    /**
+     * 更新摇杆显示
+     */
+    private void updateJoystickDisplay() {
+        int direction = (int) (joystickX * 127);   // X轴：方向（8位有符号整数）
+        int throttle = (int) (joystickY * 32767); // Y轴：油门（16位有符号整数）
+        
+        String displayText = String.format("方向: %d, 油门: %d", direction, throttle);
+        tvJoystickValues.setText(displayText);
+    }
+
+    /**
+     * 更新开关状态显示
+     */
+    private void updateSwitchStatus() {
+        int switchStatus = 0;
+        if (switchBtn1.isChecked()) switchStatus |= 0x80; // 第1位
+        if (switchBtn2.isChecked()) switchStatus |= 0x40; // 第2位
+        if (switchBtn3.isChecked()) switchStatus |= 0x20; // 第3位
+        if (switchBtn4.isChecked()) switchStatus |= 0x10; // 第4位
+        
+        String statusText = String.format("开关状态: 0x%02X", switchStatus);
+        tvSwitchStatus.setText(statusText);
+    }
+
+    /**
+     * 更新发送数据预览（在未开始测试时显示）
+     */
+    private void updateSendDataPreview() {
+        if (isTestStarted) {
+            // 如果已经开始测试，不更新预览
+            return;
+        }
+
+        // 计算摇杆值
+        int direction = (int) (joystickX * 127);   // X轴：方向（8位有符号整数）
+        int throttle = (int) (joystickY * 32767); // Y轴：油门（16位有符号整数）
+
+        // 计算开关状态
+        int switchStatus = 0;
+        if (switchBtn1.isChecked()) switchStatus |= 0x80;
+        if (switchBtn2.isChecked()) switchStatus |= 0x40;
+        if (switchBtn3.isChecked()) switchStatus |= 0x20;
+        if (switchBtn4.isChecked()) switchStatus |= 0x10;
+
+        // 构建数据包：AA 55 10 03 XX YY ZZ 55 AA
+        byte[] data = new byte[10];
+        data[0] = (byte) 0xAA;  // 帧头1
+        data[1] = (byte) 0x55;  // 帧头2
+        data[2] = (byte) 0x10;  // 命令
+        data[3] = (byte) 0x03;  // 数据长度
+        data[4] = (byte) (throttle & 0xFF);        // 油门低字节
+        data[5] = (byte) ((throttle >> 8) & 0xFF); // 油门高字节
+        data[6] = (byte) (direction & 0xFF);       // 方向
+        data[7] = (byte) (switchStatus & 0xFF);    // 开关状态
+        data[8] = (byte) 0x55;  // 帧尾1
+        data[9] = (byte) 0xAA;  // 帧尾2
+
+        // 转换为十六进制字符串显示
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : data) {
+            hexString.append(String.format("%02X ", b));
+        }
+
+        // 更新发送框显示
+        String previewText = String.format("方向: %d (0x%02X)\n" +
+                "油门: %d (0x%04X)\n" +
+                "完整数据: %s",
+                direction, direction & 0xFF,
+                throttle, throttle & 0xFFFF,
+                hexString.toString().trim());
+
+        etSend.setText(previewText);
+    }
+
+    /**
+     * 发送摇杆控制数据
+     * 格式：AA 55 10 03 XX YY ZZ 55 AA
+     */
+    private void sendJoystickData() {
+        if (currentCharacteristic == null) return;
+
+        // 计算摇杆值
+        int direction = (int) (joystickX * 127);   // X轴：方向（8位有符号整数）
+        int throttle = (int) (joystickY * 32767); // Y轴：油门（16位有符号整数）
+
+        // 计算开关状态
+        int switchStatus = 0;
+        if (switchBtn1.isChecked()) switchStatus |= 0x80;
+        if (switchBtn2.isChecked()) switchStatus |= 0x40;
+        if (switchBtn3.isChecked()) switchStatus |= 0x20;
+        if (switchBtn4.isChecked()) switchStatus |= 0x10;
+
+        // 构建数据包：AA 55 10 03 XX YY ZZ 55 AA
+        byte[] data = new byte[10];
+        data[0] = (byte) 0xAA;  // 帧头1
+        data[1] = (byte) 0x55;  // 帧头2
+        data[2] = (byte) 0x10;  // 命令
+        data[3] = (byte) 0x03;  // 数据长度
+        data[4] = (byte) (throttle & 0xFF);        // 油门低字节
+        data[5] = (byte) ((throttle >> 8) & 0xFF); // 油门高字节
+        data[6] = (byte) (direction & 0xFF);       // 方向
+        data[7] = (byte) (switchStatus & 0xFF);    // 开关状态
+        data[8] = (byte) 0x55;  // 帧尾1
+        data[9] = (byte) 0xAA;  // 帧尾2
+
+        // 发送数据
+        write(currentCharacteristic, data);
+    }
+
 
 
 }

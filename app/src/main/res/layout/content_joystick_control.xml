@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/padding_layout_2"
+    android:paddingEnd="@dimen/padding_layout_2"
+    android:paddingTop="@dimen/padding_layout_1"
+    android:paddingBottom="@dimen/padding_layout_1"
+    android:background="@color/colorGrey"
+    tools:showIn="@layout/status_main">
+
+    <!-- 摇杆区域 - 左侧 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="摇杆控制"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginBottom="5dp" />
+
+        <cn.wch.blecommon.JoystickView
+            android:id="@+id/joystick_view"
+            android:layout_width="120dp"
+            android:layout_height="120dp" />
+
+        <TextView
+            android:id="@+id/tv_joystick_values"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X: 0, Y: 0"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginTop="5dp" />
+
+    </LinearLayout>
+
+    <!-- 开关按钮区域 - 右侧 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="功能开关"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- 第一行按钮 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/switch_btn_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:background="@android:color/transparent"
+                    android:text="功能1"
+                    android:textOff="功能1"
+                    android:textOn="功能1"
+                    android:checked="false" />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/switch_btn_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:text="功能2"
+                    android:textOff="功能2"
+                    android:textOn="功能2"
+                    android:checked="false" />
+
+            </LinearLayout>
+
+            <!-- 第二行按钮 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/switch_btn_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:background="@android:color/transparent"
+                    android:text="功能3"
+                    android:textOff="功能3"
+                    android:textOn="功能3"
+                    android:checked="false" />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/switch_btn_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:text="功能4"
+                    android:textOff="功能4"
+                    android:textOn="功能4"
+                    android:checked="false" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_switch_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开关状态: 0x00"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
