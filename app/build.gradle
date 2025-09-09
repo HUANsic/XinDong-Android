@@ -1,13 +1,14 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    namespace "cn.wch.blecommon"
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "cn.wch.blecommon"
         minSdkVersion 19
-        targetSdkVersion 33
+        targetSdkVersion 29
         versionCode 1
         versionName "1.1"
 
@@ -24,8 +25,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    
-
 }
 
 dependencies {
@@ -43,8 +42,8 @@ dependencies {
     implementation 'com.github.GrenderG:Toasty:1.4.2'
 
 
-    implementation 'com.jakewharton:butterknife:10.1.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'

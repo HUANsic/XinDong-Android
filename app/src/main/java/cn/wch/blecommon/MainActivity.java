@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat;
 import cn.wch.blecommon.constant.StringConstant;
 import cn.wch.blecommon.ui.DeviceListDialog;
 import cn.wch.blecommon.ui.MtuDialog;
-import cn.wch.blecommon.ui.JoystickView;
 import cn.wch.blelib.WCHBluetoothManager;
 import cn.wch.blelib.exception.BLELibException;
 import cn.wch.blelib.host.core.callback.NotifyDataCallback;
@@ -90,13 +89,6 @@ public class MainActivity extends BLEBaseActivity {
 
     private TextView notifyLabel;
 
-    // 摇杆控制相关变量
-    private JoystickView joystickControl;
-    private TextView tvXOffset;
-    private TextView tvYOffset;
-    private float joystickXOffset = 0f;
-    private float joystickYOffset = 0f;
-
     @Override
     protected void setView() {
         setContentView(R.layout.activity_main);
@@ -124,27 +116,6 @@ public class MainActivity extends BLEBaseActivity {
 
         btnTest=findViewById(R.id.btn_test);
         notifyLabel=findViewById(R.id.tv_notify_label);
-
-        // 初始化摇杆控件
-        joystickControl = findViewById(R.id.joystick_control);
-        tvXOffset = findViewById(R.id.tv_x_offset);
-        tvYOffset = findViewById(R.id.tv_y_offset);
-
-        // 设置摇杆监听器
-        joystickControl.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
-            @Override
-            public void onJoystickMoved(float xOffset, float yOffset) {
-                joystickXOffset = xOffset;
-                joystickYOffset = yOffset;
-                
-                // 更新显示
-                tvXOffset.setText(String.format("%.2f", xOffset));
-                tvYOffset.setText(String.format("%.2f", yOffset));
-                
-                // 实时发送摇杆数据到蓝牙
-                sendJoystickData(xOffset, yOffset);
-            }
-        });
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -308,7 +279,7 @@ public class MainActivity extends BLEBaseActivity {
             //大于安卓10，需要检查定位服务
             LogUtil.d("位置服务打开：" + Location.isLocationEnable(this));
             if (!Location.isLocationEnable(this)) {
-                DialogUtil.getInstance().showSimpleDialog(this, "蓝牙扫描需要开启位置信息服务", "确定", new DialogUtil.IResult() {
+                DialogUtil.getInstance().showSimpleDialog(this, "蓝牙扫描需要开启位置信息服务", new DialogUtil.IResult() {
                     @Override
                     public void onContinue() {
                         Location.requestLocationService(MainActivity.this);
@@ -875,40 +846,6 @@ public class MainActivity extends BLEBaseActivity {
                         DialogUtil.getInstance().hideLoadingDialog();
                     }
                 });
-    }
-
-    /**
-     * 发送摇杆数据到蓝牙
-     * @param xOffset X轴偏移量 (-1.0 到 1.0)
-     * @param yOffset Y轴偏移量 (-1.0 到 1.0)
-     */
-    private void sendJoystickData(float xOffset, float yOffset) {
-        // 检查是否已连接蓝牙
-        if (!isConnected || currentCharacteristic == null) {
-            return;
-        }
-
-        // 检查当前特征值是否支持写操作
-        if ((currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) == 0
-                && (currentCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) == 0) {
-            return;
-        }
-
-        try {
-            // 构建摇杆数据包
-            // 格式: "JOYSTICK:X:Y" 例如: "JOYSTICK:0.50:-0.30"
-            String joystickData = String.format("JOYSTICK:%.2f:%.2f\r\n", xOffset, yOffset);
-            byte[] data = joystickData.getBytes("UTF-8");
-
-            // 发送数据
-            write(currentCharacteristic, data);
-
-            // 在接收区域显示发送的数据（可选）
-            LogUtil.d("发送摇杆数据: " + joystickData);
-
-        } catch (Exception e) {
-            LogUtil.d("发送摇杆数据失败: " + e.getMessage());
-        }
     }
 
 

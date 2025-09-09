@@ -21,6 +21,8 @@ public class DialogUtil {
         return dialogUtil;
     }
 
+
+
     public void showDisconnectDialog(@NonNull Activity activity,final IDisconnectResult result){
         AlertDialog.Builder builder=new AlertDialog.Builder(activity);
 

@@ -1,20 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    namespace "com.touchmcu.ui"
-    compileSdkVersion 33
+    compileSdk 31
 
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 33
+        targetSdkVersion 29
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
     }
 
     buildTypes {
@@ -24,7 +18,10 @@ android {
         }
     }
     
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 
 }
 
@@ -32,6 +29,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

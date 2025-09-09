@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">芯动计划2025手机遥控</string>
+    <string name="app_name">WCHBleDemo</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -63,5 +63,5 @@
     <string name="show_no_clear">实时显示并且不会自动清空内容</string>
     <string name="show_pause">实时显示并且内容长度超过1500字符时暂停</string>
     <string name="copyright_statement">版权声明</string>
-    <string name="copyright">Copyright © 2025 XinDong_Duffy</string>
+    <string name="copyright">Copyright © 2020 WCH</string>
 </resources>

@@ -1,21 +1,18 @@
 {
-  "version": 3,
+  "version": 2,
   "artifactType": {
     "type": "APK",
     "kind": "Directory"
   },
   "applicationId": "cn.wch.blecommon",
-  "variantName": "release",
+  "variantName": "processReleaseResources",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
-      "attributes": [],
       "versionCode": 1,
       "versionName": "1.1",
       "outputFile": "app-release.apk"
     }
-  ],
-  "elementType": "File",
-  "minSdkVersionForDexing": 19
+  ]
 }

@@ -97,7 +97,7 @@
                 android:gravity="start|top"
                 android:background="@drawable/tv_round"
                 android:hint="@string/send_hint"
-                android:text="我们的教育确有问题"
+                android:text="1234567890"
                 />
         </LinearLayout>
 
