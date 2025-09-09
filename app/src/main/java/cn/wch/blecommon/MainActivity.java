@@ -96,6 +96,13 @@ public class MainActivity extends BLEBaseActivity {
     private SwitchButton switchBtn1, switchBtn2, switchBtn3, switchBtn4;
     private float joystickX = 0, joystickY = 0;
     private boolean isTestStarted = false;
+    
+    // 发送频率控制
+    private Handler sendHandler = new Handler(Looper.getMainLooper());
+    private Runnable sendRunnable;
+    private boolean isSending = false;
+    private long lastSendTime = 0;
+    private static final long SEND_INTERVAL = 10; // 10ms间隔
 
     @Override
     protected void setView() {
@@ -611,6 +618,14 @@ public class MainActivity extends BLEBaseActivity {
         spCharacteristic.setEnabled(true);
         enableButtons(false);
         isTestStarted = false; // 禁用摇杆控制
+        
+        // 清理定时发送器
+        if (sendRunnable != null) {
+            sendHandler.removeCallbacks(sendRunnable);
+            sendRunnable = null;
+        }
+        isSending = false; // 重置发送状态
+        
         stopCurrentChar();
     }
 
@@ -881,7 +896,7 @@ public class MainActivity extends BLEBaseActivity {
                 updateJoystickDisplay();
                 updateSendDataPreview(); // 更新发送数据预览
                 if (isTestStarted && currentCharacteristic != null) {
-                    sendJoystickData();
+                    scheduleJoystickSend(); // 使用定时发送
                 }
             }
         });
@@ -893,7 +908,7 @@ public class MainActivity extends BLEBaseActivity {
                 updateSwitchStatus();
                 updateSendDataPreview(); // 更新发送数据预览
                 if (isTestStarted && currentCharacteristic != null) {
-                    sendJoystickData();
+                    scheduleJoystickSend(); // 使用定时发送
                 }
             }
         };
@@ -985,8 +1000,35 @@ public class MainActivity extends BLEBaseActivity {
     }
 
     /**
+     * 定时发送摇杆数据（控制发送频率）
+     */
+    private void scheduleJoystickSend() {
+        // 如果已经在发送中，直接返回
+        if (isSending) {
+            return;
+        }
+        
+        // 取消之前的定时器
+        if (sendRunnable != null) {
+            sendHandler.removeCallbacks(sendRunnable);
+        }
+        
+        // 设置新的定时器，10ms后发送
+        sendRunnable = new Runnable() {
+            @Override
+            public void run() {
+                isSending = false;
+                sendJoystickData();
+            }
+        };
+        
+        isSending = true;
+        sendHandler.postDelayed(sendRunnable, SEND_INTERVAL);
+    }
+
+    /**
      * 发送摇杆控制数据
-     * 格式：AA 55 10 03 XX YY ZZ 55 AA
+     * 格式：AA 55 10 04 XX YY ZZ 55 AA
      */
     private void sendJoystickData() {
         if (currentCharacteristic == null) return;
@@ -1002,12 +1044,12 @@ public class MainActivity extends BLEBaseActivity {
         if (switchBtn3.isChecked()) switchStatus |= 0x20;
         if (switchBtn4.isChecked()) switchStatus |= 0x10;
 
-        // 构建数据包：AA 55 10 03 XX YY ZZ 55 AA
+        // 构建数据包：AA 55 10 04 XX YY ZZ 55 AA
         byte[] data = new byte[10];
         data[0] = (byte) 0xAA;  // 帧头1
         data[1] = (byte) 0x55;  // 帧头2
         data[2] = (byte) 0x10;  // 命令
-        data[3] = (byte) 0x03;  // 数据长度
+        data[3] = (byte) 0x04;  // 数据长度
         data[4] = (byte) (throttle & 0xFF);        // 油门低字节
         data[5] = (byte) ((throttle >> 8) & 0xFF); // 油门高字节
         data[6] = (byte) (direction & 0xFF);       // 方向
