@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_layout_2"
     android:paddingEnd="@dimen/padding_layout_2"
-    android:paddingTop="@dimen/padding_layout_1"
+    android:paddingTop="2dp"
     android:paddingBottom="@dimen/padding_layout_1"
     android:id="@+id/ll_send"
     tools:showIn="@layout/status_main"
